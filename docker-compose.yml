@@ -1,0 +1,85 @@
+# docker compose up        … DB・メール受信箱・アプリ・ワーカーをまとめて起動（http://localhost:3000）
+# docker compose up -d db mailpit … DB とメール受信箱だけ起動（pnpm dev で開発するとき）
+# パスワードや鍵はローカルで試すためのダミー値です。
+name: kizami
+
+x-app-env: &app-env
+  DATABASE_URL: postgresql://kizami:kizami@db:5432/kizami?schema=public
+  # 未設定なら起動のたびにランダムな値を作る（scripts/docker-entrypoint.sh）
+  AUTH_SECRET: ${AUTH_SECRET:-}
+  AUTH_URL: http://localhost:${APP_PORT:-3000}
+  APP_URL: http://localhost:${APP_PORT:-3000}
+  APP_TIMEZONE: ${APP_TIMEZONE:-Asia/Tokyo}
+  INITIAL_ADMIN_EMAIL: ${INITIAL_ADMIN_EMAIL:-admin@example.com}
+  INITIAL_ADMIN_PASSWORD: ${INITIAL_ADMIN_PASSWORD:-ChangeMe123!}
+  CSV_ENCODING: ${CSV_ENCODING:-utf8-bom}
+  SMTP_URL: smtp://mailpit:1025
+  MAIL_FROM: ${MAIL_FROM:-Kizami <no-reply@example.com>}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  KIZAMI_AI_MODEL: ${KIZAMI_AI_MODEL:-claude-haiku-5-5}
+  KIZAMI_RATE_LIMIT_EMPLOYEE: ${KIZAMI_RATE_LIMIT_EMPLOYEE:-30}
+  KIZAMI_RATE_LIMIT_ADMIN: ${KIZAMI_RATE_LIMIT_ADMIN:-100}
+  KIZAMI_AI_DIGEST: ${KIZAMI_AI_DIGEST:-0}
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: kizami
+      POSTGRES_PASSWORD: kizami
+      POSTGRES_DB: kizami
+      TZ: Asia/Tokyo
+    ports:
+      - "127.0.0.1:${DB_PORT:-5432}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kizami -d kizami"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # 通知メールの受信箱（http://localhost:8025）。外部には送信しない。
+  mailpit:
+    image: axllent/mailpit:v1.33
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${MAILPIT_PORT:-8025}:8025"
+      - "127.0.0.1:${SMTP_PORT:-1025}:1025"
+
+  app:
+    build: .
+    image: kizami:local
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    environment: *app-env
+    ports:
+      - "127.0.0.1:${APP_PORT:-3000}:3000"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://localhost:3000/login').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      start_period: 60s
+      retries: 10
+
+  # 退勤忘れの通知・兆しの検知・メール送信を 5 分ごとに行う
+  worker:
+    image: kizami:local
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    environment: *app-env
+    command: ["sh", "scripts/docker-entrypoint.sh", "worker"]
+
+volumes:
+  db-data:

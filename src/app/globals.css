@@ -1,0 +1,526 @@
+@import "tailwindcss";
+
+/* ダークモード: 利用者が選んだテーマ（html.dark / html.light）を優先し、
+   未選択（システム）なら OS の設定に従う。 */
+@custom-variant dark {
+  &:where(.dark, .dark *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not(.light), :root:not(.light) *) {
+      @slot;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * デザイントークン
+ *   ベース: 墨（わずかに青みのあるニュートラル）。面と境界線の明度差で階層を作る。
+ *   アクセント: 藍。主要な操作・選択中のナビ・フォーカスリング。
+ *   Kizami: 琥珀。Kizami の発言と下書きにだけ使う。
+ * ------------------------------------------------------------------ */
+:root {
+  --background: oklch(98.4% 0.003 265);
+  --foreground: oklch(22% 0.018 265);
+  --surface: oklch(100% 0 0);
+  --surface-2: oklch(97% 0.004 265);
+  --muted-foreground: oklch(50% 0.018 265);
+  --border: oklch(91.5% 0.006 265);
+  --border-strong: oklch(84% 0.008 265);
+
+  --primary: oklch(46% 0.15 274);
+  --primary-hover: oklch(41% 0.15 274);
+  --primary-foreground: oklch(98.5% 0.008 274);
+  --primary-soft: oklch(95.5% 0.025 274);
+  --primary-soft-foreground: oklch(38% 0.13 274);
+  --ring: oklch(55% 0.16 274);
+
+  --kizami: oklch(97.4% 0.03 85);
+  --kizami-border: oklch(88% 0.07 80);
+  --kizami-foreground: oklch(34% 0.06 60);
+  --kizami-mark: oklch(66% 0.15 65);
+
+  --success: oklch(52% 0.12 155);
+  --success-soft: oklch(96% 0.03 155);
+  --warning: oklch(55% 0.13 60);
+  --warning-soft: oklch(96.5% 0.04 80);
+  --danger: oklch(53% 0.19 25);
+  --danger-soft: oklch(96.5% 0.02 25);
+  --danger-foreground: oklch(98.5% 0.01 25);
+  --info: oklch(50% 0.11 240);
+  --info-soft: oklch(96.5% 0.02 240);
+
+  --daytype-workday: oklch(100% 0 0);
+  --daytype-prescribed-holiday: oklch(98.4% 0.008 250);
+  --daytype-legal-holiday: oklch(98.3% 0.012 25);
+
+  /* チャート（固定順: 所定内 / 法定内残業 / 法定外残業） */
+  --chart-1: #5b6bd6;
+  --chart-2: #1f9d78;
+  --chart-3: #cf8a2e;
+  --chart-legal: oklch(52% 0.03 25);
+  --chart-grid: oklch(90% 0.004 260);
+
+  color-scheme: light;
+}
+
+:root.dark {
+  --background: oklch(17.5% 0.012 265);
+  --foreground: oklch(94% 0.006 265);
+  --surface: oklch(21% 0.014 265);
+  --surface-2: oklch(24% 0.014 265);
+  --muted-foreground: oklch(70% 0.014 265);
+  --border: oklch(29% 0.014 265);
+  --border-strong: oklch(37% 0.016 265);
+
+  --primary: oklch(70% 0.13 274);
+  --primary-hover: oklch(75% 0.12 274);
+  --primary-foreground: oklch(17% 0.03 274);
+  --primary-soft: oklch(28% 0.05 274);
+  --primary-soft-foreground: oklch(85% 0.07 274);
+  --ring: oklch(72% 0.13 274);
+
+  --kizami: oklch(25% 0.03 70);
+  --kizami-border: oklch(40% 0.06 70);
+  --kizami-foreground: oklch(90% 0.05 85);
+  --kizami-mark: oklch(78% 0.13 75);
+
+  --success: oklch(72% 0.13 155);
+  --success-soft: oklch(26% 0.04 155);
+  --warning: oklch(80% 0.12 75);
+  --warning-soft: oklch(27% 0.04 75);
+  --danger: oklch(68% 0.17 25);
+  --danger-soft: oklch(27% 0.05 25);
+  --danger-foreground: oklch(17% 0.03 25);
+  --info: oklch(74% 0.1 240);
+  --info-soft: oklch(26% 0.04 240);
+
+  --daytype-workday: oklch(21% 0.014 265);
+  --daytype-prescribed-holiday: oklch(25% 0.03 250);
+  --daytype-legal-holiday: oklch(26% 0.035 25);
+
+  --chart-1: #7385e6;
+  --chart-2: #22a982;
+  --chart-3: #c07e28;
+  --chart-legal: oklch(70% 0.03 25);
+  --chart-grid: oklch(34% 0.015 260);
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --background: oklch(17.5% 0.012 265);
+    --foreground: oklch(94% 0.006 265);
+    --surface: oklch(21% 0.014 265);
+    --surface-2: oklch(24% 0.014 265);
+    --muted-foreground: oklch(70% 0.014 265);
+    --border: oklch(29% 0.014 265);
+    --border-strong: oklch(37% 0.016 265);
+
+    --primary: oklch(70% 0.13 274);
+    --primary-hover: oklch(75% 0.12 274);
+    --primary-foreground: oklch(17% 0.03 274);
+    --primary-soft: oklch(28% 0.05 274);
+    --primary-soft-foreground: oklch(85% 0.07 274);
+    --ring: oklch(72% 0.13 274);
+
+    --kizami: oklch(25% 0.03 70);
+    --kizami-border: oklch(40% 0.06 70);
+    --kizami-foreground: oklch(90% 0.05 85);
+    --kizami-mark: oklch(78% 0.13 75);
+
+    --success: oklch(72% 0.13 155);
+    --success-soft: oklch(26% 0.04 155);
+    --warning: oklch(80% 0.12 75);
+    --warning-soft: oklch(27% 0.04 75);
+    --danger: oklch(68% 0.17 25);
+    --danger-soft: oklch(27% 0.05 25);
+    --danger-foreground: oklch(17% 0.03 25);
+    --info: oklch(74% 0.1 240);
+    --info-soft: oklch(26% 0.04 240);
+
+    --daytype-workday: oklch(21% 0.014 265);
+    --daytype-prescribed-holiday: oklch(25% 0.03 250);
+    --daytype-legal-holiday: oklch(26% 0.035 25);
+
+    --chart-1: #7385e6;
+    --chart-2: #22a982;
+    --chart-3: #c07e28;
+    --chart-legal: oklch(70% 0.03 25);
+    --chart-grid: oklch(34% 0.015 260);
+
+    color-scheme: dark;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * グラデーション
+ *   ブランド: 藍 → 菫 → 紅藤。主要な操作・選択中のナビ・見出しの強調に使う。
+ *   背景: 画面の四隅にごく淡い光だまりを置き、面（カード）は半透明で重ねる。
+ * ------------------------------------------------------------------ */
+:root {
+  --brand-1: oklch(50% 0.19 272);
+  --brand-2: oklch(53% 0.21 298);
+  --brand-3: oklch(62% 0.19 335);
+  --on-brand: oklch(99% 0.005 274);
+
+  --glow-1: oklch(86% 0.09 274 / 0.55);
+  --glow-2: oklch(88% 0.08 320 / 0.45);
+  --glow-3: oklch(90% 0.07 205 / 0.4);
+
+  --card-bg: oklch(100% 0 0 / 0.78);
+  --card-sheen: linear-gradient(
+    180deg,
+    oklch(100% 0 0 / 0.9),
+    oklch(100% 0 0 / 0) 55%
+  );
+  --card-shadow:
+    0 1px 2px oklch(25% 0.05 274 / 0.05),
+    0 10px 30px -14px oklch(40% 0.12 280 / 0.22);
+  --brand-shadow:
+    0 1px 0 oklch(100% 0 0 / 0.25) inset,
+    0 8px 20px -8px oklch(50% 0.2 290 / 0.55);
+  --sidebar-bg: linear-gradient(
+    180deg,
+    oklch(97% 0.025 274 / 0.85),
+    oklch(99% 0.006 274 / 0.75) 45%,
+    oklch(97% 0.03 320 / 0.8)
+  );
+}
+
+:root.dark {
+  --brand-1: oklch(56% 0.18 272);
+  --brand-2: oklch(56% 0.2 298);
+  --brand-3: oklch(62% 0.19 335);
+
+  --glow-1: oklch(40% 0.13 274 / 0.38);
+  --glow-2: oklch(38% 0.13 320 / 0.28);
+  --glow-3: oklch(40% 0.08 205 / 0.22);
+
+  --card-bg: oklch(22% 0.016 265 / 0.78);
+  --card-sheen: linear-gradient(
+    180deg,
+    oklch(100% 0 0 / 0.045),
+    oklch(100% 0 0 / 0) 55%
+  );
+  --card-shadow:
+    0 1px 2px oklch(0% 0 0 / 0.3), 0 14px 34px -16px oklch(0% 0 0 / 0.7);
+  --brand-shadow:
+    0 1px 0 oklch(100% 0 0 / 0.18) inset,
+    0 8px 24px -8px oklch(55% 0.2 290 / 0.55);
+  --sidebar-bg: linear-gradient(
+    180deg,
+    oklch(23% 0.04 274 / 0.85),
+    oklch(19% 0.014 265 / 0.75) 45%,
+    oklch(22% 0.045 320 / 0.8)
+  );
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --brand-1: oklch(56% 0.18 272);
+    --brand-2: oklch(56% 0.2 298);
+    --brand-3: oklch(62% 0.19 335);
+
+    --glow-1: oklch(40% 0.13 274 / 0.38);
+    --glow-2: oklch(38% 0.13 320 / 0.28);
+    --glow-3: oklch(40% 0.08 205 / 0.22);
+
+    --card-bg: oklch(22% 0.016 265 / 0.78);
+    --card-sheen: linear-gradient(
+      180deg,
+      oklch(100% 0 0 / 0.045),
+      oklch(100% 0 0 / 0) 55%
+    );
+    --card-shadow:
+      0 1px 2px oklch(0% 0 0 / 0.3), 0 14px 34px -16px oklch(0% 0 0 / 0.7);
+    --brand-shadow:
+      0 1px 0 oklch(100% 0 0 / 0.18) inset,
+      0 8px 24px -8px oklch(55% 0.2 290 / 0.55);
+    --sidebar-bg: linear-gradient(
+      180deg,
+      oklch(23% 0.04 274 / 0.85),
+      oklch(19% 0.014 265 / 0.75) 45%,
+      oklch(22% 0.045 320 / 0.8)
+    );
+  }
+}
+
+:root {
+  --gradient-brand: linear-gradient(
+    135deg,
+    var(--brand-1),
+    var(--brand-2) 60%,
+    var(--brand-3)
+  );
+  --gradient-brand-soft: linear-gradient(
+    90deg,
+    color-mix(in oklch, var(--brand-1) 16%, transparent),
+    color-mix(in oklch, var(--brand-2) 7%, transparent)
+  );
+  --gradient-title: linear-gradient(
+    90deg,
+    var(--foreground) 0%,
+    color-mix(in oklch, var(--foreground) 40%, var(--brand-1)) 70%,
+    var(--brand-2) 100%
+  );
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--foreground);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-muted: var(--surface-2);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-secondary: var(--surface-2);
+  --color-secondary-foreground: var(--foreground);
+  --color-accent: var(--primary-soft);
+  --color-accent-foreground: var(--primary-soft-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--border-strong);
+  --color-ring: var(--ring);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-soft-foreground: var(--primary-soft-foreground);
+
+  --color-kizami: var(--kizami);
+  --color-kizami-border: var(--kizami-border);
+  --color-kizami-foreground: var(--kizami-foreground);
+  --color-kizami-mark: var(--kizami-mark);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-success-foreground: var(--surface);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-foreground: var(--warning);
+  --color-destructive: var(--danger);
+  --color-destructive-soft: var(--danger-soft);
+  --color-destructive-foreground: var(--danger-foreground);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-info-foreground: var(--surface);
+
+  --color-daytype-workday: var(--daytype-workday);
+  --color-daytype-prescribed-holiday: var(--daytype-prescribed-holiday);
+  --color-daytype-legal-holiday: var(--daytype-legal-holiday);
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.625rem;
+
+  --font-sans:
+    var(--font-geist-sans), ui-sans-serif, system-ui, "Hiragino Sans",
+    "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
+  --font-mono:
+    var(--font-geist-mono), ui-monospace, "SFMono-Regular", "Menlo", monospace;
+
+  --animate-fade-in: fade-in 0.15s ease-out;
+  --animate-slide-in: slide-in 0.2s ease-out;
+  --animate-pop: pop 0.35s ease-out;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes slide-in {
+    from {
+      transform: translateY(0.375rem);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  @keyframes pop {
+    0% {
+      transform: scale(0.6);
+      opacity: 0;
+    }
+    60% {
+      transform: scale(1.1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+}
+
+/* グラデーションのユーティリティ（bg-* と名前が衝突しないよう別名にする） */
+@utility brand-fill {
+  background-image: var(--gradient-brand);
+  color: var(--on-brand);
+}
+@utility brand-soft-fill {
+  background-image: var(--gradient-brand-soft);
+}
+@utility brand-text {
+  background-image: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@utility brand-glow {
+  box-shadow: var(--brand-shadow);
+}
+@utility card-surface {
+  background-color: var(--card-bg);
+  background-image: var(--card-sheen);
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(12px) saturate(140%);
+}
+
+@layer components {
+  /* 各画面の見出し */
+  .page-title {
+    width: fit-content;
+    background-image: var(--gradient-title);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: var(--text-xl);
+    line-height: var(--text-xl--line-height);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  /* ログイン画面の左パネル: 藍〜紅藤のグラデーションに光だまりを重ねる */
+  .auth-hero {
+    color: oklch(99% 0.005 274);
+    background-image:
+      radial-gradient(
+        38rem 28rem at 8% 6%,
+        oklch(72% 0.17 300 / 0.55),
+        transparent 60%
+      ),
+      radial-gradient(
+        34rem 30rem at 95% 85%,
+        oklch(74% 0.13 200 / 0.45),
+        transparent 60%
+      ),
+      radial-gradient(
+        26rem 22rem at 70% 20%,
+        oklch(70% 0.2 340 / 0.35),
+        transparent 65%
+      ),
+      linear-gradient(
+        150deg,
+        oklch(34% 0.16 272),
+        oklch(42% 0.2 292) 55%,
+        oklch(48% 0.2 325)
+      );
+  }
+
+  /* 打刻カード: 右上から淡い光が差す */
+  .clock-hero {
+    background-image:
+      radial-gradient(
+        32rem 18rem at 100% 0%,
+        color-mix(in oklch, var(--brand-2) 16%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        26rem 16rem at 0% 100%,
+        color-mix(in oklch, var(--brand-1) 10%, transparent),
+        transparent 70%
+      ),
+      var(--card-sheen);
+  }
+
+  /* 時間の目盛り（「刻」のモチーフ）。区切り線などに使う */
+  .tick-rule {
+    height: 6px;
+    background-image: repeating-linear-gradient(
+      90deg,
+      color-mix(in oklch, var(--brand-1) 45%, var(--border-strong)) 0 1px,
+      transparent 1px 12px
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 12%,
+      #000 88%,
+      transparent
+    );
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--background);
+    background-image:
+      radial-gradient(60rem 40rem at -10% -15%, var(--glow-1), transparent 60%),
+      radial-gradient(50rem 36rem at 110% -5%, var(--glow-2), transparent 60%),
+      radial-gradient(60rem 40rem at 50% 115%, var(--glow-3), transparent 60%);
+    background-attachment: fixed;
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* 押せる要素は指のカーソル、無効は禁止マーク（Tailwind v4 はボタンの既定が矢印のため） */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  select:not(:disabled),
+  summary,
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled),
+  input[type="submit"]:not(:disabled),
+  input[type="file"]:not(:disabled),
+  label:has(> input[type="checkbox"]:not(:disabled)),
+  label:has(> input[type="radio"]:not(:disabled)) {
+    cursor: pointer;
+  }
+  button:disabled,
+  select:disabled,
+  input:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* 時刻・分など桁を揃えたい数値 */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
